@@ -1,0 +1,46 @@
+service: aws-auth0-auth
+
+provider:
+  name: aws
+  runtime: python2.7
+  environment:
+    AUTH_DOMAIN: ${env:AUTH_DOMAIN}
+    AUTH_CLIENT_ID: ${env:AUTH_CLIENT_ID}
+    AUTH_CLIENT_SECRET: ${env:AUTH_CLIENT_SECRET}
+    AUTH_AUDIENCE: ${env:AUTH_AUDIENCE}
+  apiKeys:
+    - auth0AuthKey
+
+functions:
+  hello:
+    handler: helloWorld.sayHello
+    description: Simple service to return a helloWorld message.
+    tags:
+      project: auth0-auth
+    events:
+      - http:
+          path: hello
+          method: get
+          authorizer: authorize
+  generateToken:
+    handler: tokenGenerator.generateToken
+    description: Service to generate a JWT token of the request body and return it.
+    tags:
+      project: auth0-auth
+    events:
+      - http:
+          path: gentoken
+          method: post
+          private: true
+  authorize:
+    handler: lambdaAuthorizer.authorize
+    description: Service to return a policy to invoke further lambdas based on given token passed as Authorization in the header.
+    tags:
+      project: auth0-auth
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
