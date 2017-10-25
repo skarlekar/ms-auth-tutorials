@@ -1,4 +1,4 @@
-#Instructions
+# Instructions
 
 1. After cloning update your copy of setEnv.sh. 
 2. Deploy your service using 'sls deploy -v'
